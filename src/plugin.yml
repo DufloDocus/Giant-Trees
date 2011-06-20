@@ -1,0 +1,9 @@
+name: Giant Trees
+main: gianttrees.Main
+version: 0.3
+commands:
+  gianttree:
+    aliases: [gt, gtree]
+    description: A tool that lets you create giant trees
+    usage: |
+           /gt
