@@ -28,7 +28,7 @@ import org.bukkit.plugin.Plugin;
 public class Main extends JavaPlugin{
 
     private static final Logger log = Logger.getLogger("Minecraft");
-    private final String version = "0.3";
+    private final String version = "0.3.1";
     private boolean permissionsInstalled = true;
     private DoCommand DC;
     private PermissionHandler permissionHandler;

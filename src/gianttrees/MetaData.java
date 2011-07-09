@@ -9,11 +9,12 @@ import org.bukkit.Material;
 public class MetaData {
     
     private int[] metaData;
-    private boolean allowed;
+    private boolean allowed, banned;
 
-    public MetaData(int[] md, boolean a){
+    public MetaData(int[] md, boolean a, boolean b){
         metaData = md;
         allowed = a;
+        banned = b;
         if(metaData[2] == -1){
             metaData[2] = -3;
             metaData[0] = 17;
@@ -26,6 +27,10 @@ public class MetaData {
 
     public boolean isAllowed(){
         return allowed;
+    }
+
+    public boolean isBanned(){
+        return banned;
     }
 
     public int[] getMetaData(){

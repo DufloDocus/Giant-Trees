@@ -18,6 +18,11 @@ public class DoCommand {
     private Settings S;
     private ArrayList<TreeFile> TF;
     private Server SE;
+    private final int[] bannedList = {0, 6, 26, 27, 28, 31, 32, 34, 36, 37, 38, 39, 40, 50,
+                                      55, 59, 63, 64, 65, 66, 68, 69, 70, 71, 72, 75, 76,
+                                      77, 78, 81, 83, 85, 90, 93, 94, 96};
+    private final int[] dangerousList = {7, 8, 9, 10, 11, 12, 13, 23, 29, 33, 44, 46, 51,
+                                         52, 53, 54, 67, 79};
 
     public DoCommand(){
         S = new Settings();
@@ -82,7 +87,12 @@ public class DoCommand {
                         player.sendMessage(ChatColor.RED + "You do not have permission to build a tree that wide!");
                     }
                     else if(!M.isAllowed()){
-                        player.sendMessage(ChatColor.RED + "You do not have permission to build custom block trees!");
+                        if(M.isBanned()){
+                            player.sendMessage(ChatColor.RED + "Invalid custom tree block id!");
+                        }
+                        else{
+                            player.sendMessage(ChatColor.RED + "You do not have permission to build this type of tree!");
+                        }
                     }
                     else if(density == -1){
                         player.sendMessage(ChatColor.RED + "Invalid density!");
@@ -114,7 +124,7 @@ public class DoCommand {
 
     private MetaData getMetaData(String[] args, Player player){
         int[] meta = new int[4];
-        boolean allowed = true;
+        boolean allowed = true, banned = false;
         meta[0] = -1;
         meta[1] = -1;
         //success type: -1 = not successful, -2 = meta data, -3 = block type
@@ -137,9 +147,16 @@ public class DoCommand {
             }
             else{
                 if(S.checkPermission(player, "gianttrees.custom")){
-                    meta[0] = getNum(treeType);
+                    meta[0] = getNum(treeType, player);
                     if(meta[0] != -1){
                         meta[2] = -3;
+                    }
+                    else{
+                        meta[2] = -3;
+                        allowed = false;
+                        if(contains(stringToInt(treeType), bannedList)){
+                            banned = true;
+                        }
                     }
                 }
                 else{
@@ -165,9 +182,16 @@ public class DoCommand {
             }
             else{
                 if(S.checkPermission(player, "gianttrees.custom")){
-                    meta[1] = getNum(leafType);
+                    meta[1] = getNum(leafType, player);
                     if(meta[1] != -1){
                         meta[3] = -3;
+                    }
+                    else{
+                        meta[3] = -3;
+                        allowed = false;
+                        if(contains(stringToInt(leafType), bannedList)){
+                            banned = true;
+                        }
                     }
                 }
                 else{
@@ -181,13 +205,13 @@ public class DoCommand {
         }catch(Exception e){
         }
 
-        return new MetaData(meta, allowed);
+        return new MetaData(meta, allowed, banned);
     }
 
-    private int getNum(String num){
+    private int getNum(String num, Player player){
         try{
             int x = Integer.parseInt(num);
-            if(x >= 0 && x <= 96){
+            if(x >= 0 && x <= 96 && !contains(x, bannedList) && (!contains(x, dangerousList) || S.checkPermission(player, "gianttrees.customdangerous"))){
                 return x;
             }
             else{
@@ -264,5 +288,23 @@ public class DoCommand {
 
     public void setPermissions(boolean pi, PermissionHandler ph){
         S.setPermissions(pi, ph);
+    }
+
+    private int stringToInt(String s){
+        try{
+            int x = Integer.parseInt(s);
+            return x;
+        }catch(Exception e){
+            return -1;
+        }
+    }
+
+    private boolean contains(int c, int[] list){
+        for(int i = 0; i < list.length; i++){
+            if(list[i] == c){
+                return true;
+            }
+        }
+        return false;
     }
 }

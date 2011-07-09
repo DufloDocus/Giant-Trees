@@ -1,66 +1,10 @@
-FROM THE BUKKIT PAGE:
+Regular Minecraft trees not cutting it for you? How about a 30 block Minecraft tree? 60? 120? 
 
-Description:
-Giant Trees was created because of a request by @chubbz (and a few others). It lets you spawn custom trees far larger than anything you'll find in Minecraft. Permissions 3.0 and Multiverse supported.
+Anything is possible with Giant Trees!
 
-Review by @jamescosten
-Since this video was taken, speed issues have been fixed (now builds instantly), and an undo command along with tree block types have been added
-
-
-Screen shot: http://img195.imageshack.us/img195/6826/treest.png
-Video: http://www.youtube.com/watch?v=op4pq6FtZlk
-
-Commands:
-USE: /gt, /gtree, or /gianttree
-Help: /gt or /gt help
-Reload Settings: /gt reload
-Undo: /gt undo
-(Stand next to the tree you wish to undo and type the command)
-Spawn Tree: /gt <height> <width> <logtype> <leaftype> <density>
-(The location where you are standing is where the center of the tree will be)
-Note: You do not need all these parameters, only <height> and <width> are required, the rest are optional
-
-Permissions:
-gianttrees.build - player is allowed to spawn a Giant Tree on command
-gianttrees.undoall - allows a player to undo any giant tree (normally they can only remove their own)
-gianttrees.reload - player can reload settings in config.txt
-gianttrees.nolimit - player is not bound to the limits in config.txt
-gianttrees.custom - player can create trees with custom blocks (ex. diamond and gold tree)
-Note: If permissions are not installed, OPs get all of these commands by default. I HIGHLY suggest installing Permissions 3.0.
-
-Config:
-Opening this .txt file will give you options for setting a max height and max width a player can make a tree. Height is also limited by the height of the world (obviously). It is VERY important you set a proper width, so that a user cannot make a width of 99999 and kill the server. Default values are 128 height (height of the minecraft world) and 16 width.
-
-Undo Saves Folder:
-As a general rule, don't mess around in here. Deleting any of the tree save files could ruin all the tree saves for a given world (no more undo's). If you generate a new map under the same name, you'll need to delete the old saves, by deleting the folder with that world's name. For example, if your map is called "world" then delete the "world" folder in plugins/Giant Trees/Undo Saves/world. This folder will grow in size overtime. About 75 medium sized giant trees (ex. /gt 60 8) will take about 40-50mb.
-
-Known Issues:
-- Shadows of spawned trees sometimes remain after the tree is gone (fixed by placing a block)
-- Undo-ing a tree while one is being built could bring the server down
-- Undo-ing a tree that hasn't been fully built could corrupt the file
-- Tree files take up considerable space (/gt 70 10 takes up about 2mb)
-- Tree base is one block bigger on one side
-
-Future Improvements:
-- Improve tree look even more (I'm still not completely satisfied)
-- Allow players to grow giant trees (ex. plant a sapling on a gold block)
-- Random % chance of Giant Trees spawning in the wild
-
-Change Log:
-0.3
-- Added log/leaf types (birch, spruce, oak) and block types (gold, iron, etc.)
-- Added customizable tree density
-- Changed the tree algorithm, should be less square and better covered (at default density)
-- Added source to GitHub
-0.2.1
-- Multiverse now fully supported
-0.2
-- Tree building completely revamped - now takes about 6 seconds (5 of those are wasted time the server gives you to run away) - Special thanks to: @nisovin
-- New tree building code fixes crashes - @nisovin
-- Added an undo command, which will work even after a server restart
-- Added a cache of trees to be built
-(Though as fast as they build now its really un-needed)
-- Added configurable tree size restrictions for admins in config.txt
-- Modified algorithm so bigger trees (ex. /gt 70 10) aren't bare (though they are still less leafy than their smaller counterparts)
-0.1
-- Initial Release
+Features:
+- Make massive trees
+- Different types of trees (ex. birch) and different block types (ex. iron)
+- Undo anytime
+- Full Permissions 3.X support
+- Multiverse support
