@@ -25,7 +25,7 @@ public class CreateTree implements Runnable{
     private ArrayList<Tree> T;
     private ArrayList<String> blockIds;
     private ArrayList<Location> blockLocations;
-    private HashSet<Location> locations;
+    private HashSet<Block> locations;
     private MetaData M;
 
     public CreateTree(ArrayList<TreeFile> t){
@@ -33,7 +33,7 @@ public class CreateTree implements Runnable{
         T = new ArrayList<Tree>();
         blockIds = new ArrayList<String>();
         blockLocations = new ArrayList<Location>();
-        locations = new HashSet<Location>();
+        locations = new HashSet<Block>();
         TF = t;
     }
     
@@ -256,7 +256,8 @@ public class CreateTree implements Runnable{
     private void doLeaves(Location loc, double x, double y, double z){
         try{
             Location loc2 = new Location(loc.getWorld(), loc.getX() + x, loc.getY() + y, loc.getZ() + z);
-            if (!locations.contains(loc2)) {
+            Block block = loc2.getBlock();
+            if (!locations.contains(block)) {
             	changeBlock(loc2, 0, 0, 0, Material.LEAVES);
             }
         }
@@ -278,12 +279,15 @@ public class CreateTree implements Runnable{
             block = location2.getBlock();
             type = block.getTypeId();
             if((type != M.getTreeMaterial().getId() && type != M.getLeafMaterial().getId()) || type == 0){
-                blockLocations.add(location2);
-                blockIds.add(String.valueOf(type));
+                if(!locations.contains(block)){
+                    blockLocations.add(location2);
+                    blockIds.add(String.valueOf(type));
+                    locations.add(block);
+                }
             }
+
             Main.locQueue.add(location2);
             Main.matQueue.add(material);
-            locations.add(location2);
 
             return location2;
         }catch(Exception e){
