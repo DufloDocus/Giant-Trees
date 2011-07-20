@@ -28,7 +28,7 @@ import org.bukkit.plugin.Plugin;
 public class Main extends JavaPlugin{
 
     private static final Logger log = Logger.getLogger("Minecraft");
-    private final String version = "0.3.2";
+    private final String version = "0.3.3";
     private boolean permissionsInstalled = true;
     private DoCommand DC;
     private PermissionHandler permissionHandler;
@@ -92,12 +92,7 @@ public class Main extends JavaPlugin{
             return permissionHandler.has(player, "gianttrees.build");
         }
         else{
-            if(player.isOp()){
-                return true;
-            }
-            else{
-                return false;
-            }
+            return player.hasPermission("gianttrees.build");
         }
     }
 }

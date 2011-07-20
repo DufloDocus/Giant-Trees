@@ -86,12 +86,7 @@ public class Settings {
             return permHand.has(player, thePerm);
         }
         else{
-            if(player.isOp()){
-                return true;
-            }
-            else{
-                return false;
-            }
+            return player.hasPermission(thePerm);
         }
     }
 
