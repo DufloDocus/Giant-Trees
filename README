@@ -3,8 +3,13 @@ Regular Minecraft trees not cutting it for you? How about a 30 block Minecraft t
 Anything is possible with Giant Trees!
 
 Features:
-- Make massive trees
+- Make massive trees via command
 - Different types of trees (ex. birch) and different block types (ex. iron)
 - Undo anytime
-- Full Permissions 3.X support
+- BukkitPerms support
 - Multiverse support
+- Spawn trees naturally in the world
+- Grow giant trees
+
+
+I started working on this mod almost a year ago. It has been a blast, and I've learn a ton. Bukkit really helped me improve as a programmer. The source code for this project is far from perfect, and if I re-wrote it today it would be better, but I'm still proud of what I created. Thanks to the over 2,000 of you who downloaded and enjoyed my plugin! And thanks to the Bukkit Team, and fellow Bukkit Developers for helping me get where I am today.

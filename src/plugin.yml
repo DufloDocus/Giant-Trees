@@ -1,6 +1,6 @@
 name: Giant Trees
-main: gianttrees.Main
-version: 0.3.3
+main: com.connormahaffey.GiantTrees.GiantTrees
+version: 0.4
 commands:
   gianttree:
     aliases: [gt, gtree]
@@ -12,13 +12,17 @@ permissions:
         description: Gives access to all Giant Trees commands
         children:
             gianttrees.build: true
+            gianttrees.grow: true
             gianttrees.undoall: true
             gianttrees.reload: true
             gianttrees.nolimit: true
             gianttrees.custom: true
             gianttrees.customdangerous: true
     gianttrees.build:
-        description: Allows a user to build a Giant Trees
+        description: Allows a user to build a Giant Tree
+        default: op
+    gianttrees.grow:
+        description: Allows a user to grow a Giant Tree
         default: op
     gianttrees.undoall:
         description: User can undo any tree, even if they didn't create it
@@ -35,3 +39,5 @@ permissions:
     gianttrees.customdangerous:
         description: User can build dangerous custom block trees (ex. lava)
         default: op
+        children:
+            gianttrees.custom: true
