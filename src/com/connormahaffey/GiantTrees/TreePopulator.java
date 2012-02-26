@@ -53,7 +53,7 @@ public class TreePopulator{
         z = (int)(Math.random() * 16 + z);
         Location loc = new Location(world, x, 0, z);
         int id = 0;
-        for(int y = 127; y > 0; y--){
+        for(int y = world.getMaxHeight() - 1; y > 0; y--){
               loc = new Location(world, x, y, z);
               id = loc.getBlock().getTypeId();
               if(id != 0){

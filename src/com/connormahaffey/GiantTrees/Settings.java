@@ -10,7 +10,7 @@ public class Settings {
 
     private String[] settings;
 
-    private final String[] config = {"Giant Trees Config for version " + GiantTrees.getVersion(),
+    private final String[] config = {"Giant Trees Config for version " + GiantTrees.getSettingsVersion(),
                                     "For more information see: https://github.com/CMahaff/Giant-Trees/wiki/Settings",
                                     "---Settings for creating trees---",
                                     "Maximum Tree Height:128",
@@ -62,7 +62,7 @@ public class Settings {
             String[] dat = FH.read("config.txt");
             if(dat.length == config.length){
                 version = dat[0];
-                if(!version.equals("Giant Trees Config for version " + GiantTrees.getVersion())){
+                if(!version.equals("Giant Trees Config for version " + GiantTrees.getSettingsVersion())){
                     GiantTrees.logInfo("Writing new config file!");
                     writeDefaultConfig();
                     settings = new String[config.length];

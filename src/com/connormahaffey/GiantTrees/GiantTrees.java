@@ -14,7 +14,8 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class GiantTrees extends JavaPlugin{
 
-    private static final String version = "0.4";
+    private static final String version = "0.4.1";
+    private static final String settingsVersion = "0.4";
     private static final Logger log = Logger.getLogger("Minecraft");
     private static Plugin GiantTrees;
     private static Settings S;
@@ -112,6 +113,14 @@ public class GiantTrees extends JavaPlugin{
      */
     protected static String getVersion(){
         return version;
+    }
+    /**
+     * Bug fixes change the version number, but not the settings. A new version would over-write old settings,
+     * this fixes that.
+     * @return settings version
+     */
+    protected static String getSettingsVersion(){
+        return settingsVersion;
     }
     /**
      * Instance of the Settings
