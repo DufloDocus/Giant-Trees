@@ -2,6 +2,7 @@ package com.connormahaffey.GiantTrees;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -57,11 +58,20 @@ public class TreePopulator{
               loc = new Location(world, x, y, z);
               id = loc.getBlock().getTypeId();
               if(id != 0){
-                  if(id == 8 || id == 19 || id == 10 || id == 11 || id == 51 || id == 7){
+                  if(id == Material.STATIONARY_WATER.getId() ||
+                     id == Material.WATER.getId() ||
+                     id == Material.STATIONARY_LAVA.getId() ||
+                     id == Material.LAVA.getId() ||
+                     id == Material.ICE.getId() ||
+                     id == Material.BEDROCK.getId()){
                       loc = null;
                       break;
                   }
-                  else if(id != 17 && id != 18 && id != 81 && id != 83 && id != 37 && id != 38 && id != 39 && id != 40 && id != 86 && id != 31 && id != 32){
+                  else if(id == Material.GRASS.getId() ||
+                          id == Material.DIRT.getId() ||
+                          id == Material.STONE.getId() ||
+                          id == Material.GRAVEL.getId() ||
+                          id == Material.SAND.getId()){
                       break;
                   }
               }
