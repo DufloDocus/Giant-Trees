@@ -14,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class GiantTrees extends JavaPlugin{
 
-    private static final String version = "0.4.2";//remember to change plugin.yml version too!
+    private static final String version = "0.4.3";//remember to change plugin.yml version too!
     private static final String settingsVersion = "0.4";
     private static final Logger log = Logger.getLogger("Minecraft");
     private static Plugin GiantTrees;

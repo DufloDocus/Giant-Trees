@@ -13,7 +13,7 @@ public class Settings {
     private final String[] config = {"Giant Trees Config for version " + GiantTrees.getSettingsVersion(),
                                     "For more information see: https://github.com/CMahaff/Giant-Trees/wiki/Settings",
                                     "---Settings for creating trees---",
-                                    "Maximum Tree Height:128",
+                                    "Maximum Tree Height:255",
                                     "Maximum Tree Width:16",
                                     "Tree Build Delay:0",
                                     "Wait between tree creation:0",

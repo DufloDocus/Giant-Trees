@@ -16,6 +16,8 @@ public class TreeBuilder implements Runnable{
     private MetaData meta;
     private boolean done;
     private int spot;
+    private Block block;
+    private Material material;
 
     /**
      * Changes one block in-game
@@ -34,8 +36,6 @@ public class TreeBuilder implements Runnable{
      */
     public void run() {
         if(spot < blockList.size()){
-            Block block;
-            Material material;
             block = blockList.get(spot);
             material = typeList.get(spot);
             block.setType(material);

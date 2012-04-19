@@ -1,6 +1,6 @@
 name: Giant Trees
 main: com.connormahaffey.GiantTrees.GiantTrees
-version: 0.4.2
+version: 0.4.3
 commands:
   gianttree:
     aliases: [gt, gtree]
