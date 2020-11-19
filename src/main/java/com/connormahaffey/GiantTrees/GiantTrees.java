@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * @author Connor Mahaffey
  */
-public class GiantTrees extends JavaPlugin{
+public class GiantTrees extends JavaPlugin {
 
     private static final String version = "0.4.3";//remember to change plugin.yml version too!
     private static final String settingsVersion = "0.4";
@@ -32,9 +32,10 @@ public class GiantTrees extends JavaPlugin{
     public void onDisable() {
         log.info("[Giant Trees] version " + version + " is disabled");
     }
+
     /**
-     * Code to run when enabled. Loads settings, worlds, turns on necessary events,
-     * and sets up permissions
+     * Code to run when enabled. Loads settings, worlds, turns on necessary
+     * events, and sets up permissions
      */
     @Override
     public void onEnable() {
@@ -46,18 +47,20 @@ public class GiantTrees extends JavaPlugin{
         L.load(getServer().getWorlds());
         CH = new CommandHandler(getServer().getScheduler());
         PM = getServer().getPluginManager();
-        if(S.allowNaturallyOccurring()){
+        if (S.allowNaturallyOccurring()) {
             ChH = new ChunkHandler(getServer().getScheduler(), getServer().getWorlds());
             PM.registerEvents(ChH, this);
         }
-        if(S.allowGiantTreePlant()){
+        if (S.allowGiantTreePlant()) {
             BPH = new BlockPlaceHandler(getServer().getScheduler());
             PM.registerEvents(BPH, this);
         }
         log.info("[Giant Trees] version " + version + " is enabled");
     }
+
     /**
      * Code to run when a command is used
+     *
      * @param sender sent the command
      * @param cmd command
      * @param commandLabel front of the command
@@ -65,77 +68,91 @@ public class GiantTrees extends JavaPlugin{
      * @return command used properly or not
      */
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
-        if(commandLabel.equalsIgnoreCase("gianttree") || commandLabel.equalsIgnoreCase("gtree") || commandLabel.equalsIgnoreCase("gt")){
-            if(sender instanceof Player){
-                CH.command((Player)sender, args);
-            }
-            else{
+    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        if (commandLabel.equalsIgnoreCase("gianttree") || commandLabel.equalsIgnoreCase("gtree") || commandLabel.equalsIgnoreCase("gt")) {
+            if (sender instanceof Player) {
+                CH.command((Player) sender, args);
+            } else {
                 logWarning("You cannot execute commands from console");
             }
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
+
     /**
      * Plugin object version of Giant Trees
+     *
      * @return Giant Trees plugin object
      */
-    protected static Plugin getPlugin(){
+    protected static Plugin getPlugin() {
         return GiantTrees;
     }
+
     /**
      * Add an info message to the log
+     *
      * @param content what to be sent
      */
-    protected static void logInfo(String content){
+    protected static void logInfo(String content) {
         log.info("[Giant Trees] " + content);
     }
+
     /**
      * Add a warning message to the log
+     *
      * @param content what to be sent
      */
-    protected static void logWarning(String content){
+    protected static void logWarning(String content) {
         log.warning("[Giant Trees] " + content);
     }
+
     /**
      * Add a severe message to the log
+     *
      * @param content what to be sent
      */
-    protected static void logSevere(String content){
+    protected static void logSevere(String content) {
         log.severe("[Giant Trees] " + content);
     }
+
     /**
      * Version of Giant Trees running
+     *
      * @return Giant Trees version
      */
-    protected static String getVersion(){
+    protected static String getVersion() {
         return version;
     }
+
     /**
-     * Bug fixes change the version number, but not the settings. A new version would over-write old settings,
-     * this fixes that.
+     * Bug fixes change the version number, but not the settings. A new version
+     * would over-write old settings, this fixes that.
+     *
      * @return settings version
      */
-    protected static String getSettingsVersion(){
+    protected static String getSettingsVersion() {
         return settingsVersion;
     }
+
     /**
      * Instance of the Settings
+     *
      * @return Settings
      */
-    protected static Settings getSettings(){
+    protected static Settings getSettings() {
         return S;
     }
+
     /**
      * Checks if a user has permission to do something
+     *
      * @param player player in question
      * @param perm permission in question
      * @return true or false
      */
-    protected static boolean checkPermission(Player player, String perm){
+    protected static boolean checkPermission(Player player, String perm) {
         return player.hasPermission("gianttrees." + perm);
     }
 }

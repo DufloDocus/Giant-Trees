@@ -13,38 +13,42 @@ import org.bukkit.scheduler.BukkitScheduler;
  *
  * @author Connor Mahaffey
  */
-public class ChunkHandler implements Listener{
-    
+public class ChunkHandler implements Listener {
+
     private ArrayList<TreePopulator> treePopulators;
     private ArrayList<String> names;
 
     /**
-     * Creates list of worlds to create naturally occuring trees on for reference
+     * Creates list of worlds to create naturally occuring trees on for
+     * reference
+     *
      * @param b BukkitScheduler
      * @param w List of worlds
      */
-    public ChunkHandler(BukkitScheduler b, List<World> w){
+    public ChunkHandler(BukkitScheduler b, List<World> w) {
         treePopulators = new ArrayList<TreePopulator>();
         names = new ArrayList<String>();
         String world;
-        do{
+        do {
             world = w.remove(0).getName();
-            if(GiantTrees.getSettings().getOccurWorldList().contains(world)){
+            if (GiantTrees.getSettings().getOccurWorldList().contains(world)) {
                 treePopulators.add(new TreePopulator(b));
                 names.add(world);
             }
-        }while(!w.isEmpty());
+        } while (!w.isEmpty());
     }
+
     /**
-     * Watches for chunk population and if on a world set to spawn trees in the wild,
-     * sends the chunk to be parsed
+     * Watches for chunk population and if on a world set to spawn trees in the
+     * wild, sends the chunk to be parsed
+     *
      * @param e Chunk Event
      */
     @EventHandler
-    public void onChunkPopulate(ChunkPopulateEvent e){
+    public void onChunkPopulate(ChunkPopulateEvent e) {
         Chunk chunk = e.getChunk();
         int index = names.indexOf(chunk.getWorld().getName());
-        if(index != -1){
+        if (index != -1) {
             treePopulators.get(index).parseChunk(chunk);
         }
     }
