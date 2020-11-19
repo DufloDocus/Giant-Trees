@@ -8,7 +8,7 @@ import org.bukkit.block.Block;
  *
  * @author Connor Mahaffey
  */
-public class TreeBuilder implements Runnable{
+public class TreeBuilder implements Runnable {
 
     private Build build;
     private ArrayList<Material> typeList;
@@ -21,9 +21,10 @@ public class TreeBuilder implements Runnable{
 
     /**
      * Changes one block in-game
+     *
      * @param b build object
      */
-    public TreeBuilder(Build b){
+    public TreeBuilder(Build b) {
         build = b;
         blockList = build.getBlockList();
         typeList = build.getNewTypeList();
@@ -31,31 +32,34 @@ public class TreeBuilder implements Runnable{
         done = false;
         spot = 0;
     }
+
     /**
      * Changes one block in-game
      */
     public void run() {
-        if(spot < blockList.size()){
+        if (spot < blockList.size()) {
             block = blockList.get(spot);
             material = typeList.get(spot);
             block.setType(material);
-            if(material.getId() == meta.getLogType().getId() && meta.hasLogMeta()){
+            if (material.getId() == meta.getLogType().getId() && meta.hasLogMeta()) {
                 block.setData(meta.getLogMeta());
             }
-            if(material.getId() == meta.getLeafType().getId() && meta.hasLeafMeta()){
+            if (material.getId() == meta.getLeafType().getId() && meta.hasLeafMeta()) {
                 block.setData(meta.getLeafMeta());
             }
             spot++;
-            if(spot == blockList.size()){
+            if (spot == blockList.size()) {
                 done = true;
             }
         }
     }
+
     /**
      * Tells if all the blocks have been changed yet
+     *
      * @return true or false
      */
-    public boolean isDone(){
+    public boolean isDone() {
         return done;
     }
 

@@ -16,129 +16,112 @@ public class CommandHandler {
 
     /**
      * Handles all the commands
+     *
      * @param b BukkitScheduler
      */
-    public CommandHandler(BukkitScheduler b){
+    public CommandHandler(BukkitScheduler b) {
         CT = new CreateTree(b, true, GiantTrees.getSettings().getWaitAfterCreation() * 1000);
         U = new Undo();
         BS = b;
     }
+
     /**
      * Parses a command a player sends
+     *
      * @param player player issuing command
      * @param command command in question
      */
-    public void command(Player player, String[] command){
-        if(command.length == 0){
+    public void command(Player player, String[] command) {
+        if (command.length == 0) {
             help(player);
-        }
-        else if(command.length == 1){
-            if(command[0].equalsIgnoreCase("help")){
+        } else if (command.length == 1) {
+            if (command[0].equalsIgnoreCase("help")) {
                 help(player);
-            }
-            else if(command[0].equalsIgnoreCase("about")){
+            } else if (command[0].equalsIgnoreCase("about")) {
                 about(player);
-            }
-            else if(command[0].equalsIgnoreCase("reload")){
+            } else if (command[0].equalsIgnoreCase("reload")) {
                 reload(player);
-            }
-            else if(command[0].equalsIgnoreCase("undo")){
-                if(U.isDone() && !CT.isRunning()){
+            } else if (command[0].equalsIgnoreCase("undo")) {
+                if (U.isDone() && !CT.isRunning()) {
                     U = new Undo(player, player.getLocation(), BS);
-                    try{
+                    try {
                         Thread t = new Thread(U);
                         t.start();
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         GiantTrees.logSevere("Cannot start undo!");
                         e.printStackTrace();
                     }
-                }
-                else{
-                    if(CT.isRunning()){
+                } else {
+                    if (CT.isRunning()) {
                         player.sendMessage(ChatColor.RED + "Cannot undo a tree while one is being built!");
-                    }
-                    else{
+                    } else {
                         player.sendMessage(ChatColor.RED + "Only one undo can be done at once!");
                     }
                 }
-            }
-            else{
+            } else {
                 player.sendMessage(ChatColor.RED + "Incorrect command parameter: " + command[0]);
                 player.sendMessage(ChatColor.RED + "Please see /gt help for correct usage!");
             }
-        }
-        else{
+        } else {
             //try and make a tree
-            if(command.length == 2 || command.length == 4 || command.length == 5){
+            if (command.length == 2 || command.length == 4 || command.length == 5) {
                 //creates tree object
                 Tree temp;
-                if(command.length == 2){
+                if (command.length == 2) {
                     temp = new Tree(player, command[0], command[1]);
-                }
-                else if(command.length == 4){
+                } else if (command.length == 4) {
                     temp = new Tree(player, command[0], command[1], command[2], command[3]);
-                }
-                else{
+                } else {
                     temp = new Tree(player, command[0], command[1], command[2], command[3], command[4]);
                 }
                 //sees if any rules were broken
-                if(temp.getHeight() < 12){
+                if (temp.getHeight() < 12) {
                     player.sendMessage(ChatColor.RED + "Tree must be at least 12 tall");
-                }
-                else if(temp.getWidth() < 4){
+                } else if (temp.getWidth() < 4) {
                     player.sendMessage(ChatColor.RED + "Tree must be at least 4 wide");
-                }
-                else if(temp.getHeight() > GiantTrees.getSettings().getMaximumTreeHeight() && !GiantTrees.checkPermission(player, "nolimit")){
+                } else if (temp.getHeight() > GiantTrees.getSettings().getMaximumTreeHeight() && !GiantTrees.checkPermission(player, "nolimit")) {
                     player.sendMessage(ChatColor.RED + "You don't have permission to make a tree that tall");
-                }
-                else if(temp.getWidth() > GiantTrees.getSettings().getMaximumTreeWidth() && !GiantTrees.checkPermission(player, "nolimit")){
+                } else if (temp.getWidth() > GiantTrees.getSettings().getMaximumTreeWidth() && !GiantTrees.checkPermission(player, "nolimit")) {
                     player.sendMessage(ChatColor.RED + "You don't have permission to make a tree that wide");
-                }
-                else if(temp.getDensity() > 35 || temp.getDensity() < 0){
+                } else if (temp.getDensity() > 35 || temp.getDensity() < 0) {
                     player.sendMessage(ChatColor.RED + "You can't make a tree with that density!");
-                }
-                else{
-                    if(GiantTrees.checkPermission(player, "build")){
-                        if(temp.isValid()){
-                            if(temp.getMetaData().isDangerous()){
-                                if(GiantTrees.checkPermission(player, "customdangerous")){
+                } else {
+                    if (GiantTrees.checkPermission(player, "build")) {
+                        if (temp.isValid()) {
+                            if (temp.getMetaData().isDangerous()) {
+                                if (GiantTrees.checkPermission(player, "customdangerous")) {
                                     CT.addTree(temp);
-                                }
-                                else{
+                                } else {
                                     player.sendMessage(ChatColor.RED + "You don't have permission to use that block");
                                 }
-                            }
-                            else if(temp.getMetaData().getLogType().getId() != 17 || temp.getMetaData().getLeafType().getId() != 18){
-                                if(GiantTrees.checkPermission(player, "custom")){
+                            } else if (temp.getMetaData().getLogType().getId() != 17 || temp.getMetaData().getLeafType().getId() != 18) {
+                                if (GiantTrees.checkPermission(player, "custom")) {
                                     CT.addTree(temp);
-                                }
-                                else{
+                                } else {
                                     player.sendMessage(ChatColor.RED + "You don't have permission to make custom trees");
                                 }
-                            }
-                            else{
+                            } else {
                                 CT.addTree(temp);
                             }
-                        }
-                        else{
+                        } else {
                             player.sendMessage(ChatColor.RED + "Invalid tree!");
                         }
-                    }
-                    else{
+                    } else {
                         player.sendMessage(ChatColor.RED + "You don't have permission to make trees!");
                     }
                 }
-            }
-            else{
+            } else {
                 player.sendMessage(ChatColor.RED + "Invalid command format - did you specify log and leaf?");
             }
         }
     }
+
     /**
      * Help section of the program
+     *
      * @param player player to help
      */
-    private void help(Player player){
+    private void help(Player player) {
         player.sendMessage(ChatColor.GREEN + "Command: /gt, /gtree, or /gianttree");
         player.sendMessage(ChatColor.GREEN + "Undo a Tree: /gt undo  - while standing near the tree");
         player.sendMessage(ChatColor.GREEN + "Reload Settings: /gt reload");
@@ -154,27 +137,30 @@ public class CommandHandler {
         player.sendMessage(ChatColor.GREEN + "<density> - How dense leaf coverage is (0-35) - 20 is default");
 
     }
+
     /**
      * About section of the program
+     *
      * @param player player to send to
      */
-    private void about(Player player){
+    private void about(Player player) {
         player.sendMessage(ChatColor.GREEN + "Giant Trees! Version " + GiantTrees.getVersion());
         player.sendMessage(ChatColor.GREEN + "Created By Connor Mahaffey");
         player.sendMessage("");
         player.sendMessage(ChatColor.GREEN + "Check out https://github.com/CMahaff/Giant-Trees/wiki");
     }
+
     /**
-     * Reloads all settings for the program. For most settings, the server will need
-     * to be restarted
+     * Reloads all settings for the program. For most settings, the server will
+     * need to be restarted
+     *
      * @param player player issuing command
      */
-    private void reload(Player player){
-        if(GiantTrees.checkPermission(player, "reload")){
+    private void reload(Player player) {
+        if (GiantTrees.checkPermission(player, "reload")) {
             GiantTrees.getSettings().loadSettings();
             player.sendMessage(ChatColor.GREEN + "Config reloaded!");
-        }
-        else{
+        } else {
             player.sendMessage(ChatColor.RED + "You don't have permission to do that!");
         }
     }

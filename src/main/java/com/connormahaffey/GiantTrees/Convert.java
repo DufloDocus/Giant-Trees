@@ -13,35 +13,37 @@ public class Convert {
     /**
      * Converts old files to the new format
      */
-    public Convert(){
+    public Convert() {
         FH = new FileHandler();
     }
+
     /**
-     * Converts old save files to the new format. Old files/folders are deleted last
-     * to minimize damage if a user stops the server, or it crashes for some reason.
+     * Converts old save files to the new format. Old files/folders are deleted
+     * last to minimize damage if a user stops the server, or it crashes for
+     * some reason.
      */
-    public void doConversion(){
+    public void doConversion() {
         String worldName;
         String fileName;
         String number = "0";
         String[] oldData;
         String[] newData;
         String[] worlds = FH.getFolders("Undo Saves");
-        for(int i = 0; i < worlds.length; i++){
+        for (int i = 0; i < worlds.length; i++) {
             worldName = worlds[i];
             File folder = new File(FH.folder + "Undo Saves" + FH.separator + worldName);
             GiantTrees.logInfo("Converting saves for " + worldName + "...");
             File[] files = folder.listFiles();
-            for(int k = 0; k < files.length; k++){
+            for (int k = 0; k < files.length; k++) {
                 fileName = files[k].getName();
-                if(!fileName.equals("Trees.dat")){
+                if (!fileName.equals("Trees.dat")) {
                     number = fileName.replace("Tree", "");
                     number = number.replace(".dat", "");
                     oldData = FH.read("Undo Saves" + FH.separator + worldName + FH.separator + fileName);
-                    if(isThere(oldData[0])){
+                    if (isThere(oldData[0])) {
                         append(oldData, number, "Saves" + FH.separator + worldName + FH.separator + "Trees.dat");
                         newData = new String[oldData.length - 4];
-                        for(int j = 0; j < newData.length; j += 4){
+                        for (int j = 0; j < newData.length; j += 4) {
                             //need to re-order in new format: location first, type last
                             newData[j] = oldData[j + 5];
                             newData[j + 1] = oldData[j + 6];
@@ -50,7 +52,7 @@ public class Convert {
                         }
                         FH.write(newData, "Saves" + FH.separator + worldName + FH.separator + fileName);
                         FH.writeToArchive("Saves" + FH.separator + worldName + FH.separator + fileName.replace(".dat", ".zip"),
-                                          "Saves" + FH.separator + worldName + FH.separator + fileName);
+                                "Saves" + FH.separator + worldName + FH.separator + fileName);
                     }
                 }
             }
@@ -61,11 +63,11 @@ public class Convert {
 
         GiantTrees.logInfo("Removing old stuff...");
 
-        for(int i = 0; i < worlds.length; i++){
+        for (int i = 0; i < worlds.length; i++) {
             worldName = worlds[i];
             File folder = new File(FH.folder + "Undo Saves" + FH.separator + worldName);
             File[] files = folder.listFiles();
-            for(int k = 0; k < files.length; k++){
+            for (int k = 0; k < files.length; k++) {
                 files[k].delete();
             }
             folder.delete();
@@ -73,26 +75,27 @@ public class Convert {
         File temp = new File(FH.folder + "Undo Saves");
         temp.delete();
     }
+
     /**
      * Appends data to the end of a text file
+     *
      * @param info data to be appended
      * @param number number of the file
      * @param path path of the file
      */
-    private void append(String[] info, String number, String path){
+    private void append(String[] info, String number, String path) {
         String[] oldData;
         String[] newData;
 
-        if(FH.pathExists(path)){
+        if (FH.pathExists(path)) {
             oldData = FH.read(path);
             newData = new String[oldData.length + 5];
-        }
-        else{
+        } else {
             oldData = new String[0];
             newData = new String[oldData.length + 5];
         }
-        
-        for(int i = 0; i < oldData.length; i++){
+
+        for (int i = 0; i < oldData.length; i++) {
             newData[i] = oldData[i];
         }
         newData[oldData.length] = info[0];
@@ -103,17 +106,19 @@ public class Convert {
 
         FH.write(newData, path);
     }
+
     /**
-     * Checks if a tree was deleted in the old file system (file remained in the old version)
+     * Checks if a tree was deleted in the old file system (file remained in the
+     * old version)
+     *
      * @param owner owner of the tree
      * @return if it was deleted or not
      */
-    private boolean isThere(String owner){
+    private boolean isThere(String owner) {
         owner = owner.replace("Owner:", "");
-        if(owner.equalsIgnoreCase("IS UNDONE")){
+        if (owner.equalsIgnoreCase("IS UNDONE")) {
             return false;
-        }
-        else{
+        } else {
             return true;
         }
     }
