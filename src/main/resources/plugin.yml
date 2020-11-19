@@ -1,4 +1,4 @@
-name: Giant Trees
+name: GiantTrees
 main: com.connormahaffey.GiantTrees.GiantTrees
 version: 0.4.3
 commands:
