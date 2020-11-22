@@ -1,6 +1,12 @@
 package com.connormahaffey.GiantTrees;
 
-import java.util.logging.Logger;
+import com.connormahaffey.GiantTrees.Handler.HandlerBlockPlace;
+import com.connormahaffey.GiantTrees.Handler.HandlerChunk;
+import com.connormahaffey.GiantTrees.Handler.HandlerCommands;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -8,86 +14,77 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-/**
- *
- * @author Connor Mahaffey
- */
 public class GiantTrees extends JavaPlugin {
 
-    private static final String version = "0.4.3";//remember to change plugin.yml version too!
-    private static final String settingsVersion = "0.4";
-    private static final Logger log = Logger.getLogger("Minecraft");
-    private static Plugin GiantTrees;
-    private static Settings S;
-    private CommandHandler CH;
-    private Load L;
-    private PluginManager PM;
-    private ChunkHandler ChH;
-    private BlockPlaceHandler BPH;
+    private static final String VERSION = "0.5.1"; //remember to change plugin.yml and pom.xml version too!
+    private static final FileManager FILE_MANAGER = new FileManager();
+    private static Plugin instance;
+    private HandlerCommands handlerCommands;
+    private HandlerChunk handlerChunk;
+    private HandlerBlockPlace handlerBlockPlace;
+    private PluginManager pluginManager;
 
     /**
      * Code to run when disabled
      */
     @Override
     public void onDisable() {
-        log.info("[Giant Trees] version " + version + " is disabled");
+        getLogger().info("version " + VERSION + " is disabled");
     }
 
     /**
-     * Code to run when enabled. Loads settings, worlds, turns on necessary
-     * events, and sets up permissions
+     * Code to run when enabled.
+     *
+     * Loads settings, worlds, turns on necessary events, and sets up
+     * permissions
      */
     @Override
     public void onEnable() {
-        GiantTrees = this;
-        S = new Settings();
-        S.loadSettings();
-        L = new Load();
-        L.convert();
-        L.load(getServer().getWorlds());
-        CH = new CommandHandler(getServer().getScheduler());
-        PM = getServer().getPluginManager();
-        if (S.allowNaturallyOccurring()) {
-            ChH = new ChunkHandler(getServer().getScheduler(), getServer().getWorlds());
-            PM.registerEvents(ChH, this);
+        instance = this;
+        load(getServer().getWorlds());
+        final Settings settings = Settings.getInstance();
+        this.handlerCommands = new HandlerCommands(getServer().getScheduler());
+        this.pluginManager = getServer().getPluginManager();
+        if (settings.occurNaturallyAllowed()) {
+            this.handlerChunk = new HandlerChunk(getServer().getScheduler(), getServer().getWorlds());
+            this.pluginManager.registerEvents(this.handlerChunk, this);
         }
-        if (S.allowGiantTreePlant()) {
-            BPH = new BlockPlaceHandler(getServer().getScheduler());
-            PM.registerEvents(BPH, this);
+        if (settings.growPlantingAllowed()) {
+            this.handlerBlockPlace = new HandlerBlockPlace(getServer().getScheduler());
+            this.pluginManager.registerEvents(this.handlerBlockPlace, this);
         }
-        log.info("[Giant Trees] version " + version + " is enabled");
+        getLogger().info("version " + VERSION + " is enabled");
     }
 
     /**
      * Code to run when a command is used
      *
-     * @param sender sent the command
+     * @param commandSender sent the command
      * @param cmd command
      * @param commandLabel front of the command
-     * @param args arguements of the command
+     * @param args arguments of the command
      * @return command used properly or not
      */
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+    public boolean onCommand(final CommandSender commandSender, final Command cmd, final String commandLabel, final String[] args) {
         if (commandLabel.equalsIgnoreCase("gianttree") || commandLabel.equalsIgnoreCase("gtree") || commandLabel.equalsIgnoreCase("gt")) {
-            if (sender instanceof Player) {
-                CH.command((Player) sender, args);
+            if (commandSender instanceof Player) {
+                this.handlerCommands.command((Player) commandSender, args);
             } else {
-                logWarning("You cannot execute commands from console");
+                getLogger().warning("You cannot execute commands from console");
             }
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
-     * Plugin object version of Giant Trees
+     * Plugin object version of GiantTrees
      *
-     * @return Giant Trees plugin object
+     * @return GiantTrees plugin object
      */
-    protected static Plugin getPlugin() {
-        return GiantTrees;
+    public static Plugin getPlugin() {
+        return instance;
     }
 
     /**
@@ -95,8 +92,8 @@ public class GiantTrees extends JavaPlugin {
      *
      * @param content what to be sent
      */
-    protected static void logInfo(String content) {
-        log.info("[Giant Trees] " + content);
+    public static void logInfo(final String content) {
+        instance.getLogger().log(Level.INFO, content);
     }
 
     /**
@@ -104,45 +101,36 @@ public class GiantTrees extends JavaPlugin {
      *
      * @param content what to be sent
      */
-    protected static void logWarning(String content) {
-        log.warning("[Giant Trees] " + content);
+    public static void logWarning(String content) {
+        instance.getLogger().log(Level.WARNING, content);
     }
 
     /**
-     * Add a severe message to the log
+     * Add a error message to the log
      *
      * @param content what to be sent
      */
-    protected static void logSevere(String content) {
-        log.severe("[Giant Trees] " + content);
+    public static void logError(final String content) {
+        instance.getSLF4JLogger().error(content);
     }
 
     /**
-     * Version of Giant Trees running
+     * Add a error message to the log
      *
-     * @return Giant Trees version
+     * @param content what to be sent
+     * @param e exception
      */
-    protected static String getVersion() {
-        return version;
+    public static void logError(final String content, final Exception e) {
+        instance.getSLF4JLogger().error(content, e);
     }
 
     /**
-     * Bug fixes change the version number, but not the settings. A new version
-     * would over-write old settings, this fixes that.
+     * Version of GiantTrees running
      *
-     * @return settings version
+     * @return GiantTrees version
      */
-    protected static String getSettingsVersion() {
-        return settingsVersion;
-    }
-
-    /**
-     * Instance of the Settings
-     *
-     * @return Settings
-     */
-    protected static Settings getSettings() {
-        return S;
+    public static String getVersion() {
+        return VERSION;
     }
 
     /**
@@ -152,7 +140,20 @@ public class GiantTrees extends JavaPlugin {
      * @param perm permission in question
      * @return true or false
      */
-    protected static boolean checkPermission(Player player, String perm) {
+    public static boolean checkPermission(final Player player, final String perm) {
         return player.hasPermission("gianttrees." + perm);
+    }
+
+    /**
+     * Creates world folders if they don't exist
+     *
+     * @param worlds world list
+     */
+    public void load(final List<World> worlds) {
+        final List<String> worldsName = new ArrayList<>();
+        worlds.forEach((world) -> {
+            worldsName.add(world.getName());
+        });
+        FILE_MANAGER.onLoad(worldsName);
     }
 }

@@ -1,174 +1,169 @@
 package com.connormahaffey.GiantTrees;
 
-import java.util.ArrayList;
+import com.connormahaffey.GiantTrees.Infos.TreeInfos;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.util.Arrays;
+import java.util.List;
+import org.bukkit.Material;
 
 /**
- *
- * @author Connor Mahaffey
+ * Holds all the settings for the program
  */
 public class Settings {
 
-    private String[] settings;
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final FileManager FILE_MANAGER = new FileManager();
+    private static final String VERSION_SETTINGS = GiantTrees.getVersion() + "_1";
+    private static Settings instance = null;
 
-    private final String[] config = {
-        "Giant Trees Config for version " + GiantTrees.getSettingsVersion(),
-        "For more information see: https://github.com/CMahaff/Giant-Trees/wiki/Settings",
-        "---Settings for creating trees---",
-        "Maximum Tree Height:255",
-        "Maximum Tree Width:16",
-        "Tree Build Delay:0",
-        "Wait between tree creation:0",
-        "---Settings for planting trees---",
-        "Allow Giant Trees to be planted(Y/N):N",
-        "Random Chance Grow(Y/N):N",
-        "Percent Random Chance:15",
-        "Block Near Grow (Y/N):N",
-        "Block Near Grow ID:41",
-        "Minimum Height:24",
-        "Minimum Width:4",
-        "Maximum Height:34",
-        "Maximum Width:6",
-        "Message when planted:Power radiates from the sapling...",
-        "Wait after tree grow:10",
-        "---Settings for naturally occuring giant trees---",
-        "Allow naturally occurring giant trees(Y/N):N",
-        "Percent Chance (per chunk):5",
-        "Minimum Height:24",
-        "Minimum Width:4",
-        "Maximum Height:34",
-        "Maximum Width:6",
-        "Wait after tree occur:20",
-        "Occur on Worlds:world",
-        "Show X/Z Location in Console(Y/N):N"
-    };
-
+    private String _confVersion;
+    private String _confComment;
+    private String _confCommentMinAndHeight;
     /**
-     * Holds all the settings for the program
+     * ---Settings commands---
      */
-    public Settings() {
+    private int treeHeightMax;
+    private int treeWidthMax;
+    private int treeBuildDelay;
+    private int treeWaitingDelayBetweenBuild;
+    /**
+     * ---Settings for planting trees---
+     */
+    private boolean growPlantingAllowed;
+    private boolean growRandomChance;
+    private int growRandomChancePercent;
+    private boolean growNearBlock;
+    private String growNearBlockMaterial;
+    private int growHeightMin;
+    private int growWidthMin;
+    private int growHeightMax;
+    private int growWidthMax;
+    private int growWaitingDelayBetweenTree;
+    private String growMessage;
+    /**
+     * ---Settings for naturally occurring GiantTrees---
+     */
+    private boolean occurNaturallyAllowed;
+    private int occurChancePercent; //per chunck
+    private int occurHeightMin;
+    private int occurWidthMin;
+    private int occurHeightMax;
+    private int occurWidthMax;
+    private int occurWaitingDelayBetweenTree;
+    private String occurOnWorlds;
+    private boolean occurShowLocationInConsole;
 
+    private Settings() {
+    }
+
+    public static Settings getInstance() {
+        if (instance == null) {
+            reloadSettings();
+        }
+        return instance;
     }
 
     /**
-     * Loads all the settings for the program. If the version information
-     * doesn't match up or the config is the wrong lenght, the default values
-     * are written.
+     * Loads all the settings for the program.
+     *
+     * If the version information doesn't match up or the config is the wrong
+     * lenght, the default values are writen.
      */
-    public void loadSettings() {
-        String version;
-        FileHandler FH = new FileHandler();
-        if (!FH.pathExists("config.txt")) {
-            writeDefaultConfig();
-            settings = new String[config.length];
-            settings = config;
+    public static void reloadSettings() {
+        final Settings settings;
+        if (!FILE_MANAGER.pathExists("config.json")) {
+            GiantTrees.logWarning("Config file doesn't exist, writing default one");
+            settings = getDefaultSettings();
         } else {
-            String[] dat = FH.read("config.txt");
-            if (dat.length == config.length) {
-                version = dat[0];
-                if (!version.equals("Giant Trees Config for version " + GiantTrees.getSettingsVersion())) {
-                    GiantTrees.logInfo("Writing new config file!");
-                    writeDefaultConfig();
-                    settings = new String[config.length];
-                    settings = config;
-                } else {
-                    settings = new String[dat.length];
-                    settings = dat;
-                }
+            final String conf = FILE_MANAGER.read("config.json");
+            final Settings userSettings = GSON.fromJson(conf, Settings.class);
+            if (userSettings == null) {
+                GiantTrees.logError("Config file writen incorrectly! Writing default values!");
+                settings = getDefaultSettings();
             } else {
-                GiantTrees.logSevere("Config file written incorrectly! Writing default values!");
-                writeDefaultConfig();
-                settings = new String[config.length];
-                settings = config;
-            }
-        }
-    }
-
-    /**
-     * Gets an integer from a setting value
-     *
-     * @param s the setting string
-     * @return the int
-     */
-    private int getInt(String s) {
-        int x = -1;
-
-        try {
-            s = s.substring(s.indexOf(":") + 1, s.length());
-            x = Integer.parseInt(s);
-        } catch (Exception e) {
-            GiantTrees.logSevere("Config file written incorrectly! Value: " + s);
-        }
-
-        return x;
-    }
-
-    /**
-     * Gets a boolean from a setting value
-     *
-     * @param s the setting string
-     * @return the boolean
-     */
-    private boolean getBool(String s) {
-        boolean x = false;
-
-        try {
-            s = s.substring(s.indexOf(":") + 1, s.length());
-            if (s.equalsIgnoreCase("y")) {
-                x = true;
-            }
-        } catch (Exception e) {
-            GiantTrees.logSevere("Config file written incorrectly! Value: " + s);
-        }
-
-        return x;
-    }
-
-    /**
-     * Gets a string from a setting value
-     *
-     * @param s the setting string
-     * @return the string value
-     */
-    private String getString(String s) {
-        try {
-            s = s.substring(s.indexOf(":") + 1, s.length());
-        } catch (Exception e) {
-            GiantTrees.logSevere("Config file written incorrectly! Value: " + s);
-        }
-
-        return s;
-    }
-
-    /**
-     * Gets a string ArrayList from a setting value
-     *
-     * @param s the setting string
-     * @return the ArrayList
-     */
-    private ArrayList<String> getList(String s) {
-        ArrayList<String> list = new ArrayList<String>();
-        try {
-            s = s.substring(s.indexOf(":") + 1, s.length());
-            s = s.replace(" ", "");
-            String[] dat = s.split(",");
-            for (int i = 0; i < dat.length; i++) {
-                if (!dat[i].equals("")) {
-                    list.add(dat[i]);
+                if (!userSettings._confVersion.equals(VERSION_SETTINGS)) {
+                    GiantTrees.logWarning("Old config file! Try to retrieve values!");
                 }
+                settings = mergeSettings(userSettings);
             }
-        } catch (Exception e) {
-            GiantTrees.logSevere("Config file written incorrectly! Value: " + s);
         }
-
-        return list;
+        writeSettings(settings);
+        instance = settings;
     }
 
     /**
-     * Writes the default config to file
+     * Get defaults settings
      */
-    private void writeDefaultConfig() {
-        FileHandler FH = new FileHandler();
-        FH.write(config, "config.txt");
+    private static Settings getDefaultSettings() {
+        final Settings settings = new Settings();
+        settings._confVersion = VERSION_SETTINGS;
+        settings._confComment = "For more information see: https://github.com/CMahaff/Giant-Trees/wiki/Settings";
+        settings._confCommentMinAndHeight = "Min Height should not be lower than " + TreeInfos.MIN_HEIGHT + " and min width not lower than " + TreeInfos.MIN_WIDTH;
+        settings.treeHeightMax = 50;
+        settings.treeWidthMax = 15;
+        settings.treeBuildDelay = 0;
+        settings.treeWaitingDelayBetweenBuild = 0;
+        settings.growPlantingAllowed = false;
+        settings.growRandomChance = false;
+        settings.growRandomChancePercent = 15;
+        settings.growNearBlock = false;
+        settings.growNearBlockMaterial = Material.GOLD_BLOCK.name();
+        settings.growHeightMin = 10;
+        settings.growWidthMin = 4;
+        settings.growHeightMax = 34;
+        settings.growWidthMax = 6;
+        settings.growWaitingDelayBetweenTree = 10;
+        settings.growMessage = "Power radiates from the sapling...";
+        settings.occurNaturallyAllowed = false;
+        settings.occurChancePercent = 5;
+        settings.occurHeightMin = 24;
+        settings.occurWidthMin = 4;
+        settings.occurHeightMax = 34;
+        settings.occurWidthMax = 6;
+        settings.occurWaitingDelayBetweenTree = 20;
+        settings.occurOnWorlds = "wolrd";
+        settings.occurShowLocationInConsole = false;
+        return settings;
+    }
+
+    /**
+     * Merge with defaults settings
+     */
+    private static Settings mergeSettings(final Settings userSetting) {
+        final Settings settingsBase = getDefaultSettings();
+        settingsBase.treeHeightMax = userSetting.treeHeightMax;
+        settingsBase.treeWidthMax = userSetting.treeWidthMax;
+        settingsBase.treeBuildDelay = userSetting.treeBuildDelay;
+        settingsBase.treeWaitingDelayBetweenBuild = userSetting.treeWaitingDelayBetweenBuild;
+        settingsBase.growPlantingAllowed = userSetting.growPlantingAllowed;
+        settingsBase.growRandomChance = userSetting.growRandomChance;
+        settingsBase.growRandomChancePercent = userSetting.growRandomChancePercent;
+        settingsBase.growNearBlock = userSetting.growNearBlock;
+        settingsBase.growNearBlockMaterial = userSetting.growNearBlockMaterial;
+        settingsBase.growHeightMin = userSetting.growHeightMin;
+        settingsBase.growWidthMin = userSetting.growWidthMin;
+        settingsBase.growHeightMax = userSetting.growHeightMax;
+        settingsBase.growWidthMax = userSetting.growWidthMax;
+        settingsBase.growWaitingDelayBetweenTree = userSetting.growWaitingDelayBetweenTree;
+        settingsBase.growMessage = userSetting.growMessage;
+        settingsBase.occurNaturallyAllowed = userSetting.occurNaturallyAllowed;
+        settingsBase.occurChancePercent = userSetting.occurChancePercent;
+        settingsBase.occurHeightMin = userSetting.occurHeightMin;
+        settingsBase.occurWidthMin = userSetting.occurWidthMin;
+        settingsBase.occurHeightMax = userSetting.occurHeightMax;
+        settingsBase.occurWidthMax = userSetting.occurWidthMax;
+        settingsBase.occurWaitingDelayBetweenTree = userSetting.occurWaitingDelayBetweenTree;
+        settingsBase.occurOnWorlds = userSetting.occurOnWorlds;
+        settingsBase.occurShowLocationInConsole = userSetting.occurShowLocationInConsole;
+        return settingsBase;
+    }
+
+    /**
+     * Writes settings to file
+     */
+    private static void writeSettings(final Settings settings) {
+        FILE_MANAGER.write(GSON.toJson(settings), "config.json");
     }
 
     /**
@@ -176,8 +171,8 @@ public class Settings {
      *
      * @return Maximum Tree Height
      */
-    public int getMaximumTreeHeight() {
-        return getInt(settings[3]);
+    public int getTreeHeightMax() {
+        return this.treeHeightMax;
     }
 
     /**
@@ -185,8 +180,8 @@ public class Settings {
      *
      * @return Maximum Tree Width
      */
-    public int getMaximumTreeWidth() {
-        return getInt(settings[4]);
+    public int getTreeWidthMax() {
+        return this.treeWidthMax;
     }
 
     /**
@@ -195,7 +190,7 @@ public class Settings {
      * @return delay
      */
     public int getTreeBuildDelay() {
-        return getInt(settings[5]);
+        return this.treeBuildDelay;
     }
 
     /**
@@ -203,26 +198,26 @@ public class Settings {
      *
      * @return time
      */
-    public int getWaitAfterCreation() {
-        return getInt(settings[6]);
+    public int getTreeWaitingDelayBetweenBuild() {
+        return this.treeWaitingDelayBetweenBuild;
     }
 
     /**
-     * Giant Trees can be planted
+     * GiantTrees can be planted
      *
      * @return true or false
      */
-    public boolean allowGiantTreePlant() {
-        return getBool(settings[8]);
+    public boolean growPlantingAllowed() {
+        return this.growPlantingAllowed;
     }
 
     /**
-     * Giant Trees planted can randomly grow
+     * GiantTrees planted can randomly grow
      *
      * @return true or false
      */
-    public boolean allowRandomChanceGrow() {
-        return getBool(settings[9]);
+    public boolean growRandomChance() {
+        return this.growRandomChance;
     }
 
     /**
@@ -230,26 +225,26 @@ public class Settings {
      *
      * @return
      */
-    public int getPercentRandomChanceGrow() {
-        return getInt(settings[10]);
+    public int getGrowRandomChancePercent() {
+        return this.growRandomChancePercent;
     }
 
     /**
-     * Giant Trees will grow if a specified block is near them
+     * GiantTrees will grow if a specified block is near them
      *
      * @return true or false
      */
-    public boolean allowBlockNearGrow() {
-        return getBool(settings[11]);
+    public boolean growNearBlock() {
+        return this.growNearBlock;
     }
 
     /**
-     * The ID a giant tree must grow near
+     * The material that a giant tree must grow near
      *
-     * @return ID
+     * @return Material
      */
-    public int getBlockNearGrowId() {
-        return getInt(settings[12]);
+    public Material getGrowNearBlockMaterial() {
+        return Material.getMaterial(this.growNearBlockMaterial);
     }
 
     /**
@@ -257,8 +252,8 @@ public class Settings {
      *
      * @return height
      */
-    public int getMinimumGrowHeight() {
-        return getInt(settings[13]);
+    public int getGrowHeightMin() {
+        return this.growHeightMin;
     }
 
     /**
@@ -266,8 +261,8 @@ public class Settings {
      *
      * @return width
      */
-    public int getMinimumGrowWidth() {
-        return getInt(settings[14]);
+    public int getGrowWidthMin() {
+        return this.growWidthMin;
     }
 
     /**
@@ -275,8 +270,8 @@ public class Settings {
      *
      * @return height
      */
-    public int getMaximumGrowHeight() {
-        return getInt(settings[15]);
+    public int getGrowHeightMax() {
+        return this.growHeightMax;
     }
 
     /**
@@ -284,8 +279,17 @@ public class Settings {
      *
      * @return width
      */
-    public int getMaximumGrowWidth() {
-        return getInt(settings[16]);
+    public int getGrowWidthMax() {
+        return this.growWidthMax;
+    }
+
+    /**
+     * Wait time after a tree grows
+     *
+     * @return time
+     */
+    public int getGrowWaitingDelayBetweenTree() {
+        return this.growWaitingDelayBetweenTree;
     }
 
     /**
@@ -294,16 +298,7 @@ public class Settings {
      * @return message
      */
     public String getGrowMessage() {
-        return getString(settings[17]);
-    }
-
-    /**
-     * Wait time after a tree grows
-     *
-     * @return time
-     */
-    public int getWaitAfterGrow() {
-        return getInt(settings[18]);
+        return this.growMessage;
     }
 
     /**
@@ -311,8 +306,8 @@ public class Settings {
      *
      * @return
      */
-    public boolean allowNaturallyOccurring() {
-        return getBool(settings[20]);
+    public boolean occurNaturallyAllowed() {
+        return this.occurNaturallyAllowed;
     }
 
     /**
@@ -320,8 +315,8 @@ public class Settings {
      *
      * @return
      */
-    public int getPercentChanceOccur() {
-        return getInt(settings[21]);
+    public int getOccurChancePercent() {
+        return this.occurChancePercent;
     }
 
     /**
@@ -329,8 +324,8 @@ public class Settings {
      *
      * @return height
      */
-    public int getMinimumOccurHeight() {
-        return getInt(settings[22]);
+    public int getOccurHeightMin() {
+        return this.occurHeightMin;
     }
 
     /**
@@ -338,8 +333,8 @@ public class Settings {
      *
      * @return
      */
-    public int getMinimumOccurWidth() {
-        return getInt(settings[23]);
+    public int getOccurWidthMin() {
+        return this.occurWidthMin;
     }
 
     /**
@@ -347,8 +342,8 @@ public class Settings {
      *
      * @return height
      */
-    public int getMaximumOccurHeight() {
-        return getInt(settings[24]);
+    public int getOccurHeightMax() {
+        return this.occurHeightMax;
     }
 
     /**
@@ -356,8 +351,8 @@ public class Settings {
      *
      * @return width
      */
-    public int getMaximumOccurWidth() {
-        return getInt(settings[25]);
+    public int getOccurWidthMax() {
+        return this.occurWidthMax;
     }
 
     /**
@@ -365,8 +360,8 @@ public class Settings {
      *
      * @return time
      */
-    public int getWaitAfterOccur() {
-        return getInt(settings[26]);
+    public int getOccurWaitingDelayBetweenTree() {
+        return occurWaitingDelayBetweenTree;
     }
 
     /**
@@ -374,8 +369,8 @@ public class Settings {
      *
      * @return String ArrayList of world names
      */
-    public ArrayList<String> getOccurWorldList() {
-        return getList(settings[27]);
+    public List<String> getOccurOnWorldsList() {
+        return Arrays.asList(this.occurOnWorlds.split(","));
     }
 
     /**
@@ -383,7 +378,18 @@ public class Settings {
      *
      * @return show or do not show
      */
-    public boolean showShowXZLocationConsole() {
-        return getBool(settings[28]);
+    public boolean occurShowLocationInConsole() {
+        return this.occurShowLocationInConsole;
+    }
+
+    /**
+     * Bug fixes change the version number, but not the settings.
+     *
+     * A new version would over-write old settings, this fixes that.
+     *
+     * @return settings version
+     */
+    public static String getSettingsVersion() {
+        return VERSION_SETTINGS;
     }
 }

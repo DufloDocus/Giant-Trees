@@ -1,74 +1,68 @@
 package com.connormahaffey.GiantTrees;
 
+import com.connormahaffey.GiantTrees.Generator.MaterialsTracker;
+import com.connormahaffey.GiantTrees.Infos.TreeInfos;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 /**
- *
- * @author Connor Mahaffey
+ * Saves a tree's undo data to file
  */
-public class Save {
+public class Save extends Runner implements FileManagement {
 
-    private FileHandler FH;
+    private final MaterialsTracker materialsTracker;
+    private final TreeInfos treeInfos;
 
-    /**
-     * Saves a tree's undo data to file
-     */
-    public Save() {
-        FH = new FileHandler();
+    public Save(final MaterialsTracker materialsTracker, final TreeInfos treeInfos) {
+        this.materialsTracker = materialsTracker;
+        this.treeInfos = treeInfos;
     }
 
-    /**
-     * Saves a tree to file
-     *
-     * @param tree the tree
-     * @param build the build
-     */
-    public void save(Tree tree, Build build) {
-        Location treeLocation = tree.getLocation();
-        ArrayList<Material> materialList = build.getOldTypeList();
-        ArrayList<Location> locationList = getLocations(build.getBlockList());
-        int num = getCurrentTreeFile("Saves" + FH.separator + tree.getWorldName() + FH.separator + "CurrentTree.dat");
-        num++;
-        int spot;
-        String[] ownerFile;
-        if (!FH.pathExists("Saves" + FH.separator + tree.getWorldName() + FH.separator + "Trees.dat")) {
-            spot = 0;
-            ownerFile = new String[5];
-        } else {
-            String[] oldOwnerFile = FH.read("Saves" + FH.separator + tree.getWorldName() + FH.separator + "Trees.dat");
-            spot = oldOwnerFile.length;
-            ownerFile = new String[spot + 5];
-            for (int i = 0; i < oldOwnerFile.length; i++) {
-                ownerFile[i] = oldOwnerFile[i];
+    @Override
+    public void doJob() {
+        final String woldName = this.treeInfos.getWorldName();
+        final int id = getCurrentTreeFile(FILE_MANAGER.getCurrentTreeIdFilePath(woldName)) + 1;
+        final String treesDataFile = FILE_MANAGER.getTreesFilePath(woldName);
+        List<FileDbTreesWrapper> treesData = null;
+        if (FILE_MANAGER.pathExists(treesDataFile)) {
+            final String fileContent = FILE_MANAGER.read(treesDataFile);
+            try {
+                treesData = new ArrayList<>(Arrays.asList(GSON.fromJson(fileContent, FileDbTreesWrapper[].class)));
+            } catch (final Exception e) {
+                GiantTrees.logError("Probleme while parsing the file, will generate new file", e);
             }
         }
+        if (treesData == null) {
+            treesData = new ArrayList<>();
+        }
 
-        ownerFile[spot] = "Owner:" + tree.getPlayerName();
-        ownerFile[spot + 1] = String.valueOf(treeLocation.getX());
-        ownerFile[spot + 2] = String.valueOf(treeLocation.getY());
-        ownerFile[spot + 3] = String.valueOf(treeLocation.getZ());
-        ownerFile[spot + 4] = String.valueOf(num);
-        FH.write(ownerFile, "Saves" + FH.separator + tree.getWorldName() + FH.separator + "Trees.dat");
+        final Location treeLocation = treeInfos.getLocation();
+        final FileDbTreesWrapper treeWrapper = new FileDbTreesWrapper(id, this.treeInfos.getPlayerName(), (int) treeLocation.getX(), (int) treeLocation.getY(), (int) treeLocation.getZ());
+        treesData.add(treeWrapper);
+        final String newTreesData = GSON.toJson(treesData.toArray());
+        FILE_MANAGER.write(newTreesData, FILE_MANAGER.getTreesFilePath(woldName));
 
-        String[] treeFile = new String[locationList.size() * 4];
-        Location location;
+        final ArrayList<Material> materialList = materialsTracker.getOldTypeList();
+        final ArrayList<Location> locationList = getLocations(materialsTracker.getBlockList());
+        final String[] treeFile = new String[locationList.size() * 4];
         int materialSpot = 0;
         for (int i = 0; i < treeFile.length; i += 4) {
-            location = locationList.remove(0);
+            final Location location = locationList.remove(0);
             treeFile[i] = String.valueOf(location.getX());
             treeFile[i + 1] = String.valueOf(location.getY());
             treeFile[i + 2] = String.valueOf(location.getZ());
-            treeFile[i + 3] = String.valueOf(materialList.get(materialSpot).getId());
+            treeFile[i + 3] = materialList.get(materialSpot).name();
             materialSpot++;
         }
-        FH.write(treeFile, "Saves" + FH.separator + tree.getWorldName() + FH.separator + "Tree" + num + ".dat");
-        FH.writeToArchive("Saves" + FH.separator + tree.getWorldName() + FH.separator + "Tree" + num + ".zip",
-                "Saves" + FH.separator + tree.getWorldName() + FH.separator + "Tree" + num + ".dat");
-        String[] currentTree = {String.valueOf(num)};
-        FH.write(currentTree, "Saves" + FH.separator + tree.getWorldName() + FH.separator + "CurrentTree.dat");
+        FILE_MANAGER.writeOld(treeFile, FILE_MANAGER.getTreeFilePath(woldName, id));
+        FILE_MANAGER.writeToArchive(FILE_MANAGER.getTreeZipFilePath(woldName, id), FILE_MANAGER.getTreeFilePath(woldName, id));
+
+        final String[] currentTree = {String.valueOf(id)};
+        FILE_MANAGER.writeOld(currentTree, FILE_MANAGER.getCurrentTreeIdFilePath(woldName));
     }
 
     /**
@@ -77,14 +71,12 @@ public class Save {
      * @param blockList The list of blocks
      * @return The list of locations
      */
-    private ArrayList<Location> getLocations(ArrayList<Block> blockList) {
-        ArrayList<Location> locationList = new ArrayList<Location>();
-        Location location;
+    private ArrayList<Location> getLocations(final ArrayList<Block> blockList) {
+        final ArrayList<Location> locationList = new ArrayList<>();
         for (int i = 0; i < blockList.size(); i++) {
-            location = blockList.get(i).getLocation();
+            final Location location = blockList.get(i).getLocation();
             locationList.add(new Location(location.getWorld(), location.getX(), location.getY(), location.getZ()));
         }
-
         return locationList;
     }
 
@@ -94,14 +86,12 @@ public class Save {
      * @param path Path of the tree file; CurrentTree.dat
      * @return Tree file number
      */
-    private int getCurrentTreeFile(String path) {
-        int x = 1;
+    private int getCurrentTreeFile(final String path) {
         try {
-            String[] temp = FH.read(path);
-            x = Integer.parseInt(temp[0]);
-            return x;
-        } catch (Exception e) {
-            return 1;
+            return Integer.parseInt(FILE_MANAGER.readOld(path)[0]);
+        } catch (final Exception e) {
+            GiantTrees.logError("Probleme while getting current tree file number", e);
         }
+        return 1;
     }
 }
