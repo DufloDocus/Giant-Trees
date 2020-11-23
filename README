@@ -1,4 +1,7 @@
-Regular Minecraft trees not cutting it for you? How about a 30 block Minecraft tree? 60? 120? 
+Original DEV => CMahaff (Connor Mahaffey)
+https://github.com/CMahaff/Giant-Trees
+
+You need a big tree ? then here we are, with custom height and width.
 
 Anything is possible with Giant Trees!
 
@@ -11,5 +14,56 @@ Features:
 - Spawn trees naturally in the world
 - Grow giant trees
 
+Exemple :
+/gt [height] [width] [material log] [material leaves] [density]
+[material log] [material leaves] [density] are optional 
 
-I started working on this mod almost a year ago. It has been a blast, and I've learn a ton. Bukkit really helped me improve as a programmer. The source code for this project is far from perfect, and if I re-wrote it today it would be better, but I'm still proud of what I created. Thanks to the over 2,000 of you who downloaded and enjoyed my plugin! And thanks to the Bukkit Team, and fellow Bukkit Developers for helping me get where I am today.
+
+Note from CMahaff :
+I started working on this mod almost a year ago. It has been a blast, and I have learn a ton. 
+Bukkit really helped me improve as a programmer. 
+The source code for this project is far from perfect, and if I re-wrote it today it would be better, but I'm still proud of what I created. 
+Thanks to the over 2,000 of you who downloaded and enjoyed my plugin! And thanks to the Bukkit Team, and fellow Bukkit Developers for helping me get where I am today.
+
+
+#################################
+#        Defaults options       #
+#################################
+MIN_HEIGHT = 10
+MIN_WIDTH = 2
+DEFAULT_DENSITY = 70
+MIN_DENSITY = 40
+MAX_DENSITY = 100
+
+#################################
+# Parameters of the config file #
+#################################
+Creating/Spawning Trees (Classic):
+- treeHeightMax : Height max of the tree's trunk
+- treeWidthMax : Width max of the tree's trunk
+- treeBuildDelay: Ticks between block placements. Higher numbers mean trees will build slowly. Recommended value of between 0 (instant) and 2.
+- treeWaitingDelayBetweenBuild: Time in seconds during player can spawn new tree
+
+Settings for Planting Trees:
+- growPlantingAllowed: Allows a player with permission to "grow" giant trees either by chance planting or special block planting (explained below). If this setting is not on, Random Chance Grow and Block Near Grow will not work. These trees cannot be undone using /undo. They will build at the same speed set at Tree Build Delay.
+- growRandomChance: Every time a user plants a sapling, there will be a percent chance a giant tree is spawned and it will have a random sized based on the parameters below.
+- growRandomChancePercent: Percent chance a giant tree spawns when a sappling is planted.
+- growNearBlock: A user can place a specified block near a sapling (ex. gold block) and a giant tree will grow where the sapling was. Placing the sapling then the block will always yield a tree standard to the biome. Placing the block and then the sapling will generate a tree based on the type of sapling it is.
+- growNearBlockMaterial: Material ID of the block to be used with a sapling to make a giant tree.
+- growHeightMin: Minimum random height for a grown tree.
+- growWidthMin: Minimum random width for a grown tree.
+- growHeightMax: Maximum random height for a grown tree.
+- growWidthMax: Maximum random width for a grown tree.
+- growWaitingDelayBetweenTree: Same as "treeWaitingDelayBetweenBuild" but for growing trees
+- growMessage: Message to display when a tree is about to grow. Ex. Power radiates from the sappling
+
+Settings for naturally occurring giant trees :
+- occurNaturallyAllowed: Giant trees will attempt to spawn in chunks when they are first created. Existing chunks will not be populated. This may take some time since they must be done one at a time, and therefore may not show up right away. You will need to move around and create new chunks for this to work. Since these trees belong to no one they cannot be undone with /undo. These trees will always build instantly. This is very experimental and it will put stress on your server. You may want to generate the map with these trees locally on your own computer then add the map to the server. You've been warned.
+- occurChancePercent : (per chunk) Percent chance per chunk that a giant tree will spawned. Since chunks are fairly small (16 by 16 blocks) you probably want to keep this under 5.
+- occurHeightMin: Minimum random height for a spawned tree.
+- occurWidthMin: Minimum random width for a spawned tree.
+- occurHeightMax: Maximum random height for a spawned tree.
+- occurWidthMax: Maximum random width for a spawned tree.
+- occurWaitingDelayBetweenTree: Same as "Wait between tree creation" but for spawning trees
+- occurOnWorlds: Names of worlds to generate naturally occurring giant trees on. The names should be written like the folders in your Bukkit directory, so "world_nether" not "world nether". It should look something like this: world, my_world, world1.
+- occurShowLocationInConsole: Show the x and z chunk location where a new tree has naturally occurred in console. Good for judging how many trees are spawning in on the map.
